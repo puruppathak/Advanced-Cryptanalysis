@@ -1,0 +1,76 @@
+Applied Cryptography Project 2: Party1 stores files on a cloud server and later allows other Parties to retrieve (some of) them.
+
+Dependencies:
+-------------
+
+sudo apt-get install libssl-dev
+
+
+Compilation Instructions: ( Note: Please check your system if it is 32bit or 64bit Ubuntu Linux first)
+
+PLEASE run file compile_64bit.sh or compile_32bit.sh ( $ ./compile_64bit.sh or ./compile_32bit.sh) to compile all modules or Use the following commands on the terminal in Ubuntu:
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+FOR 64 bit Ubuntu
+$ g++ -o ghotekar-pathak-encrypt ghotekar-pathak-encrypt.cpp -lssl -lcrypto
+
+$ g++ -o ghotekar-pathak-authorize ghotekar-pathak-authorize.cpp -lssl -lcrypto
+
+$ g++ -o ghotekar-pathak-decrypt ghotekar-pathak-decrypt.cpp -lssl -lcrypto
+
+$ g++ -g -O -c ghotekar-pathak-aws-s3-cloud-upload.cpp -Ichilkat-9.5.0-x86_64-linux-gcc/include/
+
+$ g++ -o ghotekar-pathak-aws-s3-cloud-upload ghotekar-pathak-aws-s3-cloud-upload.o -L./chilkat-9.5.0-x86_64-linux-gcc/lib -lchilkat-9.5.0 -lresolv -lpthread
+
+$ g++ -g -O -c ghotekar-pathak-aws-s3-cloud-download.cpp -I chilkat-9.5.0-x86_64-linux-gcc/include/
+
+$ g++ -o ghotekar-pathak-aws-s3-cloud-download ghotekar-pathak-aws-s3-cloud-download.o -L./chilkat-9.5.0-x86_64-linux-gcc/lib -lchilkat-9.5.0 -lresolv -lpthread
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+FOR 32 bit Ubuntu
+$ g++ -o ghotekar-pathak-encrypt ghotekar-pathak-encrypt.cpp -lssl -lcrypto
+
+$ g++ -o ghotekar-pathak-authorize ghotekar-pathak-authorize.cpp -lssl -lcrypto
+
+$ g++ -o ghotekar-pathak-decrypt ghotekar-pathak-decrypt.cpp -lssl -lcrypto
+
+$ g++ -g -O -c ghotekar-pathak-aws-s3-cloud-upload.cpp -I./chilkat-9.5.0-x86-linux-gcc/include/
+
+$ g++ -o ghotekar-pathak-aws-s3-cloud-upload ghotekar-pathak-aws-s3-cloud-upload.o -L./chilkat-9.5.0-x86-linux-gcc/lib -lchilkat-9.5.0 -lresolv -lpthread
+
+$ g++ -g -O -c ghotekar-pathak-aws-s3-cloud-download.cpp -I./chilkat-9.5.0-x86-linux-gcc/include/
+
+$ g++ -o ghotekar-pathak-aws-s3-cloud-download ghotekar-pathak-aws-s3-cloud-download.o -L./chilkat-9.5.0-x86-linux-gcc/lib -lchilkat-9.5.0 -lresolv -lpthread
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Execution instructions:
+
+1. Generate fkey.txt , efilename.txt and the encrypted file whose name is the sha256 hash of the original filename. In this example the name of the file is file.txt 
+   whose sha256 hash is aadf327c8267c09d6fffd87a1a80ad3c798469ff332b7a57b9e8c045d46b2af7. In this example this hash is used. It will change if filename is different from file.txt.
+	
+	$ ./ghotekar-pathak-encrypt key.txt filename.txt file.txt
+
+2. Upload the file to Amazon cloud S3.
+	
+	$ ./ghotekar-pathak-aws-s3-cloud-upload aadf327c8267c09d6fffd87a1a80ad3c798469ff332b7a57b9e8c045d46b2af7
+
+3. Authorized users will use the application to generate the enc_filename.txt which contains the encrypted filename so that they can download from the cloud. 
+   The filename and fkey will be provided by the owner to the authorized user.
+
+	$ ./ghotekar-pathak-authorize filename.txt
+
+4. Authorized user will download the file from Amazon cloud S3. In this example the enc_filename.txt contains "aadf327c8267c09d6fffd87a1a80ad3c798469ff332b7a57b9e8c045d46b2af7"
+
+	$ ./ghotekar-pathak-aws-s3-cloud-download aadf327c8267c09d6fffd87a1a80ad3c798469ff332b7a57b9e8c045d46b2af7
+
+5. Authorized user will decrypt the file using fkey and the downloaded encrypted file.
+	
+	$ ./ghotekar-pathak-decrypt aadf327c8267c09d6fffd87a1a80ad3c798469ff332b7a57b9e8c045d46b2af7 enc_filename.txt fkey.txt
+
+6. The file will be decrypted and will be written in recovered_file.txt
+
+
